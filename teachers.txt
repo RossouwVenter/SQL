@@ -1,0 +1,7 @@
+id|first_name|last_name|school|hire_date|salary
+1|Janet|Smith|F.D. Roosevelt HS|2011-10-03|36200
+2|Pieter|van der Merwe|Pietersburg|1993-01-15|65000
+3|Lee|Reynolds|F.D. Roosevelt HS|2011-10-03|43500
+4|Samuel|Cole|Myers Middle School|2011-10-30|36200
+5|Samantha|Bush|Myers Middle School|2011-08-30|43500
+6|Betty|Diaz|F.D. Roosevelt HS|2006-03-22|38500
