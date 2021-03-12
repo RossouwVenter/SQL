@@ -90,5 +90,80 @@ SELECT schools_left.id,
 FROM schools_left LEFT JOIN schools_right
 ON schools_left.id = schools_right.id;
 -----------------------------------------------------------
+--Alias
+SELECT lt.id,
+ lt.left_school,
+ rt.right_school
+u FROM schools_left AS lt LEFT JOIN schools_right AS rt
+ON lt.id = rt.id;
+-----------------------------------------------------------
+--join multiple tables:
+CREATE TABLE schools_enrollment (
+    id integer,
+    enrollment integer
+);
+
+CREATE TABLE schools_grades (
+    id integer,
+    grades varchar(10)
+);
+
+INSERT INTO schools_enrollment (id, enrollment)
+VALUES
+    (1, 360),
+    (2, 1001),
+    (5, 450),
+    (6, 927);
+
+INSERT INTO schools_grades (id, grades)
+VALUES
+    (1, 'K-3'),
+    (2, '9-12'),
+    (5, '6-8'),
+    (6, '9-12');
+
+SELECT lt.id, lt.left_school, en.enrollment, gr.grades
+FROM schools_left AS lt LEFT JOIN schools_enrollment AS en
+ ON lt.id = en.id
+LEFT JOIN schools_grades AS gr
+ ON lt.id = gr.id;
+ 
+-------------
+--populate the file.
+
+CREATE TABLE us_counties_2000 (
+ geo_name varchar(90),
+ state_us_abbreviation varchar(2),
+ state_fips varchar(2),
+ county_fips varchar(3),
+ p0010001 integer,
+ p0010002 integer,
+ p0010003 integer,
+ p0010004 integer,
+ p0010005 integer,
+ p0010006 integer,
+ p0010007 integer,
+ p0010008 integer,
+ p0010009 integer,
+ p0010010 integer,
+ p0020002 integer,
+ p0020003 integer
+);
+
+-------------------------
+SELECT c2010.geo_name,
+ c2010.state_us_abbreviation AS state,
+ c2010.p0010001 AS pop_2010,
+ c2000.p0010001 AS pop_2000,
+ c2010.p0010001 - c2000.p0010001 AS raw_change,
+ round( (CAST(c2010.p0010001 AS numeric(8,1)) - c2000.p0010001)
+ / c2000.p0010001 * 100, 1 ) AS pct_change
+FROM us_counties_2010 c2010 INNER JOIN us_counties_2000 c2000
+ON c2010.state_fips = c2000.state_fips
+ AND c2010.county_fips = c2000.county_fips
+AND c2010.p0010001 <> c2000.p0010001
+ORDER BY pct_change DESC;
+
+
 
 
