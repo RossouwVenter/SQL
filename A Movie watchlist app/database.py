@@ -7,7 +7,7 @@ CREATE_MOVIES_TABLE = """CREATE TABLE IF NOT EXISTS movies(
 	release_timestamp REAL
 );"""
 
-CREATE_USERS_TABLE = """CREATE TABLE IF NOT EXISTS wachted(
+CREATE_USERS_TABLE = """CREATE TABLE IF NOT EXISTS users(
 	username PRIMARY KEY
 	)"""
 
@@ -23,9 +23,14 @@ INSERT_USER = "INSERT INTO users (username) VALUES (?)"
 DELETE_MOVIE = 'DELETE FROM movies WHERE title = ?;'
 SELECT_ALL_MOVIES = "SELECT * FROM movies;"
 SELECT_UPCOMING_MOVIES = "SELECT * FROM movies WHERE release_timestamp > ?"
-SELECT_WATCHED_MOVIES = "SELECT * FROM watched WHERE watcher_name = ?;"
+SELECT_WATCHED_MOVIES = """SELECT * FROM movies
+JOIN watched ON movies.id = watched.movie_id
+JOIN users ON users.username = watched.user_username
+WHERE username = ?;"""
 INSERT_WATCHED_MOVIE = "INSERT INTO watched (user_username,movie_id) VALUES (?,?);"
 SET_WATCHED_MOVIES = "UPDATE movies SET watched = 1 WHERE title = ?;"
+SEARCH_MOVIE = " SELECT * FROM movies WHERE title LIKE ?;"
+CREATE_RELEASE_INDEX = "CREATE INDEX  IF NOT EXISTS idx_movies_release ON movies(release_timestamp);"
 
 connection = sqlite3.connect('data.db')
 
@@ -35,6 +40,7 @@ def create_tables():
 		connection.execute(CREATE_MOVIES_TABLE)
 		connection.execute(CREATE_USERS_TABLE)
 		connection.execute(CREATE_WATCHED_TABLE)
+		connection.execute(CREATE_RELEASE_INDEX)
 
 def add_user(username):
 	with connection:
@@ -52,6 +58,12 @@ def get_movies(upcoming = False):
 			cursur.execute(SELECT_UPCOMING_MOVIES, (today_timestamp))
 		else:
 			cursur.execute(SELECT_ALL_MOVIES)
+		return cursur.fetchall()
+
+def search_movies(search_term):
+	with connection:
+		cursur = connection.cursur()
+		cursur.execute(SEARCH_MOVIE,(F'%{search_term}%'))
 		return cursur.fetchall()
 
 def watch_movie(username,movie_id):
