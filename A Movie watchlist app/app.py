@@ -71,10 +71,10 @@ while (user_input := input(menu)) != '8':
 		promp_add_movie()
 	elif user_input == '2':
 		movies = database.get_movies(True)
-		print_movie_list("Upcoming",movies)
+		print_movie_list("Upcoming", movies)
 	elif user_input == '3':
 		movies = database.get_movies()
-		print_movie_list("All",movies)
+		print_movie_list("All", movies)
 	elif user_input == '4':
 		promt_watch_movie()
 	elif user_input == '5':
