@@ -55,7 +55,7 @@ def get_movies(upcoming = False):
 		cursor = connection.cursor()
 		if upcoming:
 			today_timestamp = datetime.datetime.today().timestamp()
-			cursor.execute(SELECT_UPCOMING_MOVIES, (today_timestamp))
+			cursor.execute(SELECT_UPCOMING_MOVIES, (today_timestamp,))
 		else:
 			cursor.execute(SELECT_ALL_MOVIES)
 		return cursor.fetchall()
@@ -63,17 +63,9 @@ def get_movies(upcoming = False):
 def search_movies(search_term):
 	with connection:
 		cursor = connection.cursor()
-		cursor.execute(SEARCH_MOVIES,(f'%{search_term}%'))
+		cursor.execute(SEARCH_MOVIES,(f'%{search_term}%',))
 		return cursor.fetchall()
 
- def watch_movie(username,movie_id):
-	with connection: 		
-		connection.execute(INSERT_WATCHED_MOVIE,(username,movie_id))
 
- def get_watched_movies(username):
- 	with connection:
-		cursor = connection.cursor()
- 		cursor.execute(SELECT_WATCHED_MOVIES,(username,))
- 		return cursor.fetchall()
 
 
