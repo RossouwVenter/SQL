@@ -1,15 +1,11 @@
 from typing import List
 import random
 
-import psycopg2
-from dotenv import load_dotenv
-
 import database
-from models.poll import poll
+from connection_pool import get_connection
 from models.option import Option
-from connectionPool import pool
+from models.poll import Poll
 
-DATABASE_PROMPT = "Enter the DATABASE_URI value or leave empty to load from .env file: "
 
 MENU_PROMPT = """-- Menu --
 
@@ -26,16 +22,13 @@ NEW_OPTION_PROMPT = "Enter new option text (or leave empty to stop adding option
 
 
 def prompt_create_poll():
-    poll_title = input("Enter poll title: ")
-    poll_owner = input("Enter poll owner: ")
-    poll = Poll(poll_title, poll_owner)
+    title = input("Enter poll title: ")
+    owner = input("Enter poll owner: ")
+    poll = Poll(title, owner)
     poll.save()
-    options = []
 
     while (new_option := input(NEW_OPTION_PROMPT)):
-        POLL.add_option(new_option)
-
-    database.create_poll(connection, poll_title, poll_owner, options)
+        poll.add_option(new_option)
 
 
 def list_open_polls():
@@ -46,38 +39,38 @@ def list_open_polls():
 def prompt_vote_poll():
     poll_id = int(input("Enter poll would you like to vote on: "))
 
-    _print_poll_options(Poll.get(poll_id).options)    
+    _print_poll_options(Poll.get(poll_id).options)
 
     option_id = int(input("Enter option you'd like to vote for: "))
     username = input("Enter the username you'd like to vote as: ")
-
-    Option.get(option_id).vote(username)   
+    Option.get(option_id).vote(username)
 
 
 def _print_poll_options(options: List[Option]):
-    for option in poll_with_options:
+    for option in options:
         print(f"{option.id}: {option.text}")
 
 
-def show_poll_votes()):
+def show_poll_votes():
     poll_id = int(input("Enter poll you would like to see votes for: "))
-    
     poll = Poll.get(poll_id)
     options = poll.options
     votes_per_option = [len(option.votes) for option in options]
     total_votes = sum(votes_per_option)
 
     try:
-        for option,votes in zip(options,votes_per_option):
+        for option, votes in zip(options, votes_per_option):
             percentage = votes / total_votes * 100
-            print(f"{option.text} got {votes} votes ({percentage:.2f}% of total)")
-        except: ZeroDivisionError:
-            print("No votes cast for this poll yet.")
+            percentage = votes / total_votes * 100
+            print(f"{option.text} for {votes} ({percentage:.2f}% of total)")
+    except ZeroDivisionError:
+        print("No votes yet cast for this poll.")
 
 
 def randomize_poll_winner():
     poll_id = int(input("Enter poll you'd like to pick a winner for: "))
-    _print_poll_options(Poll.get(poll_id).options)
+    poll = Poll.get(poll_id)
+    _print_poll_options(poll.options)
 
     option_id = int(input("Enter which is the winning option, we'll pick a random winner from voters: "))
     votes = Option.get(option_id).votes
@@ -94,10 +87,9 @@ MENU_OPTIONS = {
 }
 
 
-def menu():         
-    connection = pool.getconn()
-    database.create_tables(connection)
-    pool.putconn(connection)
+def menu():
+    with get_connection() as connection:
+        database.create_tables(connection)
 
     while (selection := input(MENU_PROMPT)) != "6":
         try:
