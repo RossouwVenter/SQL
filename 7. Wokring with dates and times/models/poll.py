@@ -1,5 +1,7 @@
 from typing import List
 
+import psycopg2
+
 from connection_pool import get_connection
 from models.option import Option
 import database
