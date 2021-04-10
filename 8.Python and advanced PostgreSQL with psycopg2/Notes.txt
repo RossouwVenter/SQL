@@ -1,0 +1,56 @@
+SQL notes:
+Create a procedure:
+
+
+CREATE PROCEDURE insert_test_data() AS $$
+BEGIN
+	CREATE TABLE test_data (id INTEGER,name TEXT);
+	INSERT INTO test_data VALUES (1, 'Bob');
+	COMMIT;
+END;
+$$language plpsql;
+
+CALL insert_test_data();
+
+COnnecion vs transaction:
+Connection:
+
+can be either sending or receiving data related to one query at a time.
+
+Transaction:
+
+> all querys run in a transaction.
+> linear and synchronous.
+> Also runs one query at a time.
+
+
+how to run querys simulatanesly.
+Can open multiple connections to a database at a time.
+
+Locking in PostgreSQL:
+
+> Table-level locking(limited acces to tables)
+> Row-level locking(limited acces to individual rows)
+> Advisory locking (just suggestions, doesnt actually limit)
+
+Table-level:
+
+Table require while working on a table.
+there are diffrent types:
+
+Current lock mode
+Requested lock mode
+etc.
+
+Try not to do manual locking.
+
+Psycopg2 is thread safe!
+
+AIOPG is similar to Psycopg2.
+
+
+Using SQL string Composition.
+
+
+
+
