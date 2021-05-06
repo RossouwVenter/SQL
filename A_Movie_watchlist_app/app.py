@@ -2,7 +2,7 @@ import datetime
 import database
 # edit
 
-menu = """ Please select one of the following options:
+menu = """Please select one of the following options:
 1) Add a new movie
 2) View upcomming movies.
 3) View all movies
@@ -19,7 +19,7 @@ print(welcome)
 database.create_tables()
 
 def promp_add_movie():
-	title = input("MOvie title: ")
+	title = input("Movie title: ")
 	release_date = input('Release date (dd-mm-YYYY): ')
 	parsed_date = datetime.datetime.strptime(release_date, "%d-%m-%Y")
 	timestamp = parsed_date.timestamp()

@@ -65,6 +65,17 @@ def search_movies(search_term):
 		cursor = connection.cursor()
 		cursor.execute(SEARCH_MOVIES,(f'%{search_term}%',))
 		return cursor.fetchall()
+		
+def watch_movie(username, movie_id):
+    with connection:
+        connection.execute(INSERT_WATCHED_MOVIE, (username, movie_id))
+    
+def get_watched_movies(username):
+    with connection:
+        cursor = connection.cursor()
+        cursor.execute(SELECT_WATCHED_MOVIES, (username,))
+
+		return cursor.fetchall()
 
 
 
